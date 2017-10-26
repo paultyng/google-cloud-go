@@ -547,9 +547,15 @@ func (t *trace) constructTrace(spans []*Span) *api.Trace {
 		if t.localOptions&optionStack != 0 {
 			sp.setStackLabel()
 		}
-		sp.SetLabel(LabelHost, sp.host)
-		sp.SetLabel(LabelURL, sp.url)
-		sp.SetLabel(LabelMethod, sp.method)
+		if sp.host != "" {
+			sp.SetLabel(LabelHost, sp.host)
+		}
+		if sp.url != "" {
+			sp.SetLabel(LabelURL, sp.url)
+		}
+		if sp.method != "" {
+			sp.SetLabel(LabelMethod, sp.method)
+		}
 		if sp.statusCode != 0 {
 			sp.SetLabel(LabelStatusCode, strconv.Itoa(sp.statusCode))
 		}
