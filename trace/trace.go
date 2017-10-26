@@ -175,13 +175,17 @@ const (
 	spanKindServer      = `RPC_SERVER`
 	spanKindUnspecified = `SPAN_KIND_UNSPECIFIED`
 	maxStackFrames      = 20
-	labelHost           = `trace.cloud.google.com/http/host`
-	labelMethod         = `trace.cloud.google.com/http/method`
-	labelStackTrace     = `trace.cloud.google.com/stacktrace`
-	labelStatusCode     = `trace.cloud.google.com/http/status_code`
-	labelURL            = `trace.cloud.google.com/http/url`
-	labelSamplingPolicy = `trace.cloud.google.com/sampling_policy`
-	labelSamplingWeight = `trace.cloud.google.com/sampling_weight`
+)
+
+// Well known span labels.
+const (
+	LabelHost           = `trace.cloud.google.com/http/host`
+	LabelMethod         = `trace.cloud.google.com/http/method`
+	LabelStackTrace     = `trace.cloud.google.com/stacktrace`
+	LabelStatusCode     = `trace.cloud.google.com/http/status_code`
+	LabelURL            = `trace.cloud.google.com/http/url`
+	LabelSamplingPolicy = `trace.cloud.google.com/sampling_policy`
+	LabelSamplingWeight = `trace.cloud.google.com/sampling_weight`
 )
 
 const (
@@ -428,8 +432,8 @@ func configureSpanFromPolicy(s *Span, p SamplingPolicy, ok bool) {
 	}
 	if d.Sample {
 		// This trace is in the random sample, so set the labels.
-		s.SetLabel(labelSamplingPolicy, d.Policy)
-		s.SetLabel(labelSamplingWeight, fmt.Sprint(d.Weight))
+		s.SetLabel(LabelSamplingPolicy, d.Policy)
+		s.SetLabel(LabelSamplingWeight, fmt.Sprint(d.Weight))
 	}
 }
 
@@ -543,11 +547,11 @@ func (t *trace) constructTrace(spans []*Span) *api.Trace {
 		if t.localOptions&optionStack != 0 {
 			sp.setStackLabel()
 		}
-		sp.SetLabel(labelHost, sp.host)
-		sp.SetLabel(labelURL, sp.url)
-		sp.SetLabel(labelMethod, sp.method)
+		sp.SetLabel(LabelHost, sp.host)
+		sp.SetLabel(LabelURL, sp.url)
+		sp.SetLabel(LabelMethod, sp.method)
 		if sp.statusCode != 0 {
-			sp.SetLabel(labelStatusCode, strconv.Itoa(sp.statusCode))
+			sp.SetLabel(LabelStatusCode, strconv.Itoa(sp.statusCode))
 		}
 		apiSpans[i] = &sp.span
 	}
@@ -813,6 +817,6 @@ func (s *Span) setStackLabel() {
 		lastSigPanic = fn.Name() == "runtime.sigpanic"
 	}
 	if label, err := json.Marshal(stack); err == nil {
-		s.SetLabel(labelStackTrace, string(label))
+		s.SetLabel(LabelStackTrace, string(label))
 	}
 }
